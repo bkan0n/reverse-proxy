@@ -16,6 +16,6 @@ youngnebula.com {
 
 	@testapi host testapi.youngnebula.com
 	handle @api {
-	    reverse_proxy genjishimada-api-test:8000
+		reverse_proxy genjishimada-api-test:8000
 	}
 }
