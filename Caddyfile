@@ -21,6 +21,6 @@ youngnebula.com {
 
 	@rabbitmq host rabbitmq.youngnebula.com
 	handle @rabbitmq {
-		genjishimada-rabbitmq:15672
+		reverse_proxy genjishimada-rabbitmq:15672
 	}
 }
