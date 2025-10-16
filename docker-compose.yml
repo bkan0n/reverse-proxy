@@ -1,4 +1,4 @@
-name: genjishimada-reverse-proxy
+name: bkan0n-reverse-proxy
 
 services:
   caddy:
