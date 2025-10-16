@@ -15,20 +15,19 @@ jobs:
         - name: Sanity check file exists
           run: |
             ls -la
-            test -f reverse-proxy/Caddyfile
+            test -f Caddyfile
 
         - name: Check Caddyfile format and validate
           run: |
-            # Mount the repository and run from /work (repo root)
             docker run --rm -v "${{ github.workspace }}:/work" -w /work caddy:2 \
-              caddy fmt --diff --config reverse-proxy/Caddyfile | tee /tmp/diff
+              caddy fmt --diff --config Caddyfile | tee /tmp/diff
             if [ -s /tmp/diff ]; then
-              echo "::error::Caddyfile is not formatted. Run 'caddy fmt --overwrite reverse-proxy/Caddyfile'."
+              echo "::error::Caddyfile is not formatted. Run 'caddy fmt --overwrite Caddyfile'."
               exit 1
             fi
 
             docker run --rm -v "${{ github.workspace }}:/work" -w /work caddy:2 \
-              caddy validate --adapter caddyfile --config reverse-proxy/Caddyfile
+              caddy validate --adapter caddyfile --config Caddyfile
 
   deploy:
     runs-on: ubuntu-latest
