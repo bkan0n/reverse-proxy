@@ -1,16 +1,16 @@
 youngnebula.com {
-        tls {
-                dns cloudflare {env.YOUNGNEBULA_COM_CF_API_TOKEN}
-        }
-        reverse_proxy genjishimada-web:8080
+	tls {
+		dns cloudflare {env.YOUNGNEBULA_COM_CF_API_TOKEN}
+	}
+	reverse_proxy genjishimada-web:8080
 }
 *.youngnebula.com {
-        tls {
-                dns cloudflare {env.YOUNGNEBULA_COM_CF_API_TOKEN}
-        }
+	tls {
+		dns cloudflare {env.YOUNGNEBULA_COM_CF_API_TOKEN}
+	}
 
-        @api host api.youngnebula.com
-        handle @api {
-                reverse_proxy genjishimada-api:8000
-        }
+	@api host api.youngnebula.com
+	handle @api {
+		reverse_proxy genjishimada-api:8000
+	}
 }
