@@ -11,6 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Detect path: repo root or reverse-proxy/
       - name: Locate Caddyfile
         id: locate
         run: |
@@ -25,36 +26,42 @@ jobs:
           fi
           echo "Found: ${{ steps.locate.outputs.path }}"
 
-      - name: Show what the container sees
-        run: |
-          docker run --rm -v "${{ github.workspace }}:/work" ghcr.io/caddybuilds/caddy-cloudflare:latest \
-            ls -la "/work" "/work/$(dirname '${{ steps.locate.outputs.path }}')"
-
+      # Produce a formatted copy and compare with repo version
       - name: Format check (no changes allowed)
         run: |
           set -euo pipefail
-          docker run --rm -v "${{ github.workspace }}:/work" -w /work \
-            ghcr.io/caddybuilds/caddy-cloudflare:latest \
-            caddy fmt --diff --config "${{ steps.locate.outputs.path }}" | tee /tmp/caddyfmt.diff
-          if [ -s /tmp/caddyfmt.diff ]; then
-            echo "::group::caddy fmt diff"
+          CFG="${{ steps.locate.outputs.path }}"
+          # Pin to a known Caddy version; update to match your prod image tag
+          IMG="ghcr.io/caddybuilds/caddy-cloudflare:latest"
+
+          # Write formatted output to a temp file
+          docker run --rm -v "${{ github.workspace }}:/work" -w /work "$IMG" \
+            sh -lc "caddy fmt --config \"$CFG\"" > /tmp/Caddyfile.formatted
+
+          # Normalize line endings in case of CRLF sneaking in
+          tr -d '\r' < "$CFG" > /tmp/Caddyfile.repo
+
+          # Show differences (if any) and fail if they exist
+          if ! diff -u /tmp/Caddyfile.repo /tmp/Caddyfile.formatted > /tmp/caddyfmt.diff; then
+            echo "::group::caddy fmt differences"
             cat /tmp/caddyfmt.diff
             echo "::endgroup::"
-            echo "::error::Caddyfile is not formatted. Run: caddy fmt --overwrite ${{ steps.locate.outputs.path }}"
+            echo "::error::Caddyfile is not formatted. Run: caddy fmt --overwrite $CFG"
             exit 1
           fi
+          echo "Caddyfile formatting OK."
 
-      - name: Validate Caddyfile (syntax + provisioning)
+      # Validate using same image (has cloudflare dns module)
+      - name: Validate Caddyfile
         env:
-          # dummy token so dns module doesn't complain in CI
           YOUNGNEBULA_COM_CF_API_TOKEN: "dummy"
         run: |
           set -euo pipefail
-          docker run --rm \
-            -e YOUNGNEBULA_COM_CF_API_TOKEN \
-            -v "${{ github.workspace }}:/work" -w /work \
-            ghcr.io/caddybuilds/caddy-cloudflare:latest \
-            caddy validate --adapter caddyfile --config "${{ steps.locate.outputs.path }}"
+          CFG="${{ steps.locate.outputs.path }}"
+          IMG="ghcr.io/caddybuilds/caddy-cloudflare:latest"
+          docker run --rm -e YOUNGNEBULA_COM_CF_API_TOKEN \
+            -v "${{ github.workspace }}:/work" -w /work "$IMG" \
+            caddy validate --adapter caddyfile --config "$CFG"
 
   deploy:
     runs-on: ubuntu-latest
