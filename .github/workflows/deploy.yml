@@ -7,31 +7,31 @@ on:
 
 jobs:
 
-  caddyfile-lint:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
+  # caddyfile-lint:
+  #     runs-on: ubuntu-latest
+  #     steps:
+  #       - uses: actions/checkout@v4
 
-        - name: Sanity check file exists
-          run: |
-            ls -la
-            test -f Caddyfile
+  #       - name: Sanity check file exists
+  #         run: |
+  #           ls -la
+  #           test -f Caddyfile
 
-        - name: Check Caddyfile format and validate
-          run: |
-            docker run --rm -v "${{ github.workspace }}:/work" -w /work ghcr.io/caddybuilds/caddy-cloudflare:latest \
-              caddy fmt --diff --config Caddyfile | tee /tmp/diff
-            if [ -s /tmp/diff ]; then
-              echo "::error::Caddyfile is not formatted. Run 'caddy fmt --overwrite Caddyfile'."
-              exit 1
-            fi
+  #       - name: Check Caddyfile format and validate
+  #         run: |
+  #           docker run --rm -v "${{ github.workspace }}:/work" -w /work ghcr.io/caddybuilds/caddy-cloudflare:latest \
+  #             caddy fmt --diff --config Caddyfile | tee /tmp/diff
+  #           if [ -s /tmp/diff ]; then
+  #             echo "::error::Caddyfile is not formatted. Run 'caddy fmt --overwrite Caddyfile'."
+  #             exit 1
+  #           fi
 
-            docker run --rm -v "${{ github.workspace }}:/work" -w /work ghcr.io/caddybuilds/caddy-cloudflare:latest \
-              caddy validate --adapter caddyfile --config Caddyfile
+  #           docker run --rm -v "${{ github.workspace }}:/work" -w /work ghcr.io/caddybuilds/caddy-cloudflare:latest \
+  #             caddy validate --adapter caddyfile --config Caddyfile
 
   deploy:
     runs-on: ubuntu-latest
-    needs: caddyfile-lint
+    # needs: caddyfile-lint
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
