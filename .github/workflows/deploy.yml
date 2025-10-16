@@ -19,14 +19,14 @@ jobs:
 
         - name: Check Caddyfile format and validate
           run: |
-            docker run --rm -v "${{ github.workspace }}:/work" -w /work caddy:2 \
+            docker run --rm -v "${{ github.workspace }}:/work" -w /work ghcr.io/caddybuilds/caddy-cloudflare:latest \
               caddy fmt --diff --config Caddyfile | tee /tmp/diff
             if [ -s /tmp/diff ]; then
               echo "::error::Caddyfile is not formatted. Run 'caddy fmt --overwrite Caddyfile'."
               exit 1
             fi
 
-            docker run --rm -v "${{ github.workspace }}:/work" -w /work caddy:2 \
+            docker run --rm -v "${{ github.workspace }}:/work" -w /work ghcr.io/caddybuilds/caddy-cloudflare:latest \
               caddy validate --adapter caddyfile --config Caddyfile
 
   deploy:
