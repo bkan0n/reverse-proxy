@@ -2,7 +2,8 @@ name: bkan0n-reverse-proxy
 
 services:
   caddy:
-    image: ghcr.io/caddybuilds/caddy-cloudflare:latest
+    build:
+      context: ./reverse-proxy
     container_name: genjishimada-reverse-proxy
     restart: unless-stopped
     cap_add:
@@ -12,7 +13,6 @@ services:
       - "443:443"
       - "443:443/udp"
     volumes:
-      - $PWD/Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
     environment:
