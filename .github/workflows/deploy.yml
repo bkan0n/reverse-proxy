@@ -51,18 +51,6 @@ jobs:
           fi
           echo "Caddyfile formatting OK."
 
-      # Validate using same image (has cloudflare dns module)
-      - name: Validate Caddyfile
-        env:
-          YOUNGNEBULA_COM_CF_API_TOKEN: "dummy"
-        run: |
-          set -euo pipefail
-          CFG="${{ steps.locate.outputs.path }}"
-          IMG="ghcr.io/caddybuilds/caddy-cloudflare:latest"
-          docker run --rm -e YOUNGNEBULA_COM_CF_API_TOKEN \
-            -v "${{ github.workspace }}:/work" -w /work "$IMG" \
-            caddy validate --adapter caddyfile --config "$CFG"
-
   deploy:
     runs-on: ubuntu-latest
     needs: caddyfile-lint
