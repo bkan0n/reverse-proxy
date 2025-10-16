@@ -3,7 +3,7 @@ name: bkan0n-reverse-proxy
 services:
   caddy:
     build:
-      context: ./reverse-proxy
+      context: .
     container_name: genjishimada-reverse-proxy
     restart: unless-stopped
     cap_add:
