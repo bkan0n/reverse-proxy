@@ -1,58 +1,51 @@
-name: Caddyfile Lint
+name: Caddyfile Lint (PR)
 
 on:
   pull_request:
-    paths: ["Caddyfile", "**/Caddyfile"]
-  push:
-    branches: [main]
-    paths: ["Caddyfile", "**/Caddyfile"]
+    paths:
+      - "Caddyfile"
+      - "reverse-proxy/Caddyfile"
 
 jobs:
-  caddyfile-check:
+  caddyfile-lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # Optional: matrix over multiple Caddyfiles if you keep several
-      - name: Find Caddyfiles
-        id: files
-        run: |
-          mapfile -t files < <(git ls-files | grep -E '(^|/)(Caddyfile)$' || true)
-          if [ ${#files[@]} -eq 0 ]; then
-            echo "No Caddyfile found; nothing to do."
-            exit 0
-          fi
-          printf '%s\n' "${files[@]}" | jq -R . | jq -s '{list: .}' > files.json
-          echo "files=$(cat files.json)" >> "$GITHUB_OUTPUT"
-
-      - name: Check format and validate
-        if: steps.files.outputs.files != ''
+      - name: Locate Caddyfile
+        id: locate
         run: |
           set -euo pipefail
-          files=$(jq -r '.list[]' <<< '${{ steps.files.outputs.files }}')
+          if [ -f Caddyfile ]; then
+            echo "path=Caddyfile" >> "$GITHUB_OUTPUT"
+          elif [ -f reverse-proxy/Caddyfile ]; then
+            echo "path=reverse-proxy/Caddyfile" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::No Caddyfile found at repo root or reverse-proxy/."
+            exit 1
+          fi
+          echo "Found: ${{ steps.locate.outputs.path }}"
 
-          # Use the official caddy image to run commands against your files
-          failed=0
-          for f in $files; do
-            echo "::group::Format check for $f"
-            # --diff prints differences if reformatting is needed; empty output means OK
-            DIFF_OUTPUT=$(docker run --rm -v "$PWD:/work" -w /work caddy:2 \
-              caddy fmt --diff --config "$f")
-            if [ -n "$DIFF_OUTPUT" ]; then
-              echo "$DIFF_OUTPUT"
-              echo "::error file=$f::Caddyfile is not formatted. Run 'caddy fmt --overwrite --config $f'."
-              failed=1
-            else
-              echo "OK: $f formatting"
-            fi
+      - name: Format check (no changes allowed)
+        run: |
+          set -euo pipefail
+          CFG="${{ steps.locate.outputs.path }}"
+          IMG="ghcr.io/caddybuilds/caddy-cloudflare:latest"
+
+          # Produce formatted output
+          docker run --rm -v "${{ github.workspace }}:/work" -w /work "$IMG" \
+            sh -lc "caddy fmt --config \"$CFG\"" > /tmp/Caddyfile.formatted
+
+          # Normalize repo file LF endings in case CRLF slipped in
+          tr -d '\r' < "$CFG" > /tmp/Caddyfile.repo
+
+          # Diff and fail with a helpful message if needed
+          if ! diff -u /tmp/Caddyfile.repo /tmp/Caddyfile.formatted > /tmp/caddyfmt.diff; then
+            echo "::group::caddy fmt differences"
+            cat /tmp/caddyfmt.diff
             echo "::endgroup::"
+            echo "::error::Caddyfile is not formatted. Run: caddy fmt --overwrite $CFG"
+            exit 1
+          fi
 
-            echo "::group::Validate $f"
-            # Validate semantics (parses + provisions without starting)
-            docker run --rm -v "$PWD:/work" -w /work caddy:2 \
-              caddy validate --adapter caddyfile --config "$f"
-            echo "::endgroup::"
-          done
-
-          exit $failed
+          echo "Caddyfile formatting OK."
