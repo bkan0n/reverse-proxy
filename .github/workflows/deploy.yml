@@ -6,32 +6,59 @@ on:
       - main
 
 jobs:
+  caddyfile-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-  # caddyfile-lint:
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - uses: actions/checkout@v4
+      - name: Locate Caddyfile
+        id: locate
+        run: |
+          set -euo pipefail
+          if [ -f Caddyfile ]; then
+            echo "path=Caddyfile" >> "$GITHUB_OUTPUT"
+          elif [ -f reverse-proxy/Caddyfile ]; then
+            echo "path=reverse-proxy/Caddyfile" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::No Caddyfile found at repo root or reverse-proxy/."
+            exit 1
+          fi
+          echo "Found: ${{ steps.locate.outputs.path }}"
 
-  #       - name: Sanity check file exists
-  #         run: |
-  #           ls -la
-  #           test -f Caddyfile
+      - name: Show what the container sees
+        run: |
+          docker run --rm -v "${{ github.workspace }}:/work" ghcr.io/caddybuilds/caddy-cloudflare:latest \
+            ls -la "/work" "/work/$(dirname '${{ steps.locate.outputs.path }}')"
 
-  #       - name: Check Caddyfile format and validate
-  #         run: |
-  #           docker run --rm -v "${{ github.workspace }}:/work" -w /work ghcr.io/caddybuilds/caddy-cloudflare:latest \
-  #             caddy fmt --diff --config Caddyfile | tee /tmp/diff
-  #           if [ -s /tmp/diff ]; then
-  #             echo "::error::Caddyfile is not formatted. Run 'caddy fmt --overwrite Caddyfile'."
-  #             exit 1
-  #           fi
+      - name: Format check (no changes allowed)
+        run: |
+          set -euo pipefail
+          docker run --rm -v "${{ github.workspace }}:/work" -w /work \
+            ghcr.io/caddybuilds/caddy-cloudflare:latest \
+            caddy fmt --diff --config "${{ steps.locate.outputs.path }}" | tee /tmp/caddyfmt.diff
+          if [ -s /tmp/caddyfmt.diff ]; then
+            echo "::group::caddy fmt diff"
+            cat /tmp/caddyfmt.diff
+            echo "::endgroup::"
+            echo "::error::Caddyfile is not formatted. Run: caddy fmt --overwrite ${{ steps.locate.outputs.path }}"
+            exit 1
+          fi
 
-  #           docker run --rm -v "${{ github.workspace }}:/work" -w /work ghcr.io/caddybuilds/caddy-cloudflare:latest \
-  #             caddy validate --adapter caddyfile --config Caddyfile
+      - name: Validate Caddyfile (syntax + provisioning)
+        env:
+          # dummy token so dns module doesn't complain in CI
+          YOUNGNEBULA_COM_CF_API_TOKEN: "dummy"
+        run: |
+          set -euo pipefail
+          docker run --rm \
+            -e YOUNGNEBULA_COM_CF_API_TOKEN \
+            -v "${{ github.workspace }}:/work" -w /work \
+            ghcr.io/caddybuilds/caddy-cloudflare:latest \
+            caddy validate --adapter caddyfile --config "${{ steps.locate.outputs.path }}"
 
   deploy:
     runs-on: ubuntu-latest
-    # needs: caddyfile-lint
+    needs: caddyfile-lint
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
