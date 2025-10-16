@@ -8,20 +8,27 @@ on:
 jobs:
 
   caddyfile-lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Check Caddyfile format and validate
-        run: |
-          docker run --rm -v "$PWD:/work" -w /work/reverse-proxy caddy:2 \
-            caddy fmt --diff --config Caddyfile | tee /tmp/diff
-          if [ -s /tmp/diff ]; then
-            echo "::error::Caddyfile is not formatted. Run 'caddy fmt --overwrite reverse-proxy/Caddyfile'."
-            exit 1
-          fi
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
 
-          docker run --rm -v "$PWD:/work" -w /work/reverse-proxy caddy:2 \
-            caddy validate --adapter caddyfile --config Caddyfile
+        - name: Sanity check file exists
+          run: |
+            ls -la
+            test -f reverse-proxy/Caddyfile
+
+        - name: Check Caddyfile format and validate
+          run: |
+            # Mount the repository and run from /work (repo root)
+            docker run --rm -v "${{ github.workspace }}:/work" -w /work caddy:2 \
+              caddy fmt --diff --config reverse-proxy/Caddyfile | tee /tmp/diff
+            if [ -s /tmp/diff ]; then
+              echo "::error::Caddyfile is not formatted. Run 'caddy fmt --overwrite reverse-proxy/Caddyfile'."
+              exit 1
+            fi
+
+            docker run --rm -v "${{ github.workspace }}:/work" -w /work caddy:2 \
+              caddy validate --adapter caddyfile --config reverse-proxy/Caddyfile
 
   deploy:
     runs-on: ubuntu-latest
