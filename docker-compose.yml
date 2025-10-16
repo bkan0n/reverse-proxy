@@ -1,0 +1,29 @@
+name: genjishimada-reverse-proxy
+
+services:
+  caddy:
+    image: ghcr.io/caddybuilds/caddy-cloudflare:latest
+    container_name: genjishimada-reverse-proxy
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - YOUNGNEBULA_COM_CF_API_TOKEN=${YOUNGNEBULA_COM_CF_API_TOKEN}
+    networks:
+      - genji-network
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  genji-network:
+    external: true
