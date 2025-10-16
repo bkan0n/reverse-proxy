@@ -18,4 +18,9 @@ youngnebula.com {
 	handle @testapi {
 		reverse_proxy genjishimada-api-dev:8000
 	}
+
+	@rabbitmq host rabbitmq.youngnebula.com
+	handle @rabbitmq {
+		genjishimada-rabbitmq:15672
+	}
 }
