@@ -11,7 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Detect path: repo root or reverse-proxy/
       - name: Locate Caddyfile
         id: locate
         run: |
@@ -26,7 +25,6 @@ jobs:
           fi
           echo "Found: ${{ steps.locate.outputs.path }}"
 
-      # Produce a formatted copy and compare with repo version
       - name: Format check (no changes allowed)
         run: |
           set -euo pipefail
