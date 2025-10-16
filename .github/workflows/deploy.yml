@@ -6,8 +6,26 @@ on:
       - main
 
 jobs:
-   deploy:
+
+  caddyfile-lint:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Caddyfile format and validate
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work/reverse-proxy caddy:2 \
+            caddy fmt --diff --config Caddyfile | tee /tmp/diff
+          if [ -s /tmp/diff ]; then
+            echo "::error::Caddyfile is not formatted. Run 'caddy fmt --overwrite reverse-proxy/Caddyfile'."
+            exit 1
+          fi
+
+          docker run --rm -v "$PWD:/work" -w /work/reverse-proxy caddy:2 \
+            caddy validate --adapter caddyfile --config Caddyfile
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: caddyfile-lint
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
