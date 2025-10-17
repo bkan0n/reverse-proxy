@@ -1,10 +1,8 @@
-name: bkan0n-reverse-proxy
-
 services:
-  caddy:
+  bkan0n-reverse-proxy:
     build:
       context: .
-    container_name: genjishimada-reverse-proxy
+    container_name: bkan0n-reverse-proxy
     restart: unless-stopped
     cap_add:
       - NET_ADMIN
@@ -16,14 +14,25 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     environment:
+      - BKAN0N_COM_CF_API_TOKEN=${BKAN0N_COM_CF_API_TOKEN}
+      - DOOM_PK_CF_API_TOKEN=${DOOM_PK_CF_API_TOKEN}
+      - GENJI_PK_CF_API_TOKEN=${GENJI_PK_CF_API_TOKEN}
       - YOUNGNEBULA_COM_CF_API_TOKEN=${YOUNGNEBULA_COM_CF_API_TOKEN}
+      - WAITFORMEIN_SPACE_CF_API_TOKEN=${WAITFORMEIN_SPACE_CF_API_TOKEN}
+      - FROMSKYTOCENTER_COM_CF_API_TOKEN=${FROMSKYTOCENTER_COM_CF_API_TOKEN}
     networks:
+      - caddy-network
       - genji-network
+      - doom-network
 
 volumes:
   caddy_data:
   caddy_config:
 
 networks:
+  caddy-network:
+    external: true
   genji-network:
+    external: true
+  doom-network:
     external: true

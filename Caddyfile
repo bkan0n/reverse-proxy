@@ -1,3 +1,68 @@
+bkan0n.com {
+	tls {
+		dns cloudflare {env.BKAN0N_COM_CF_API_TOKEN}
+	}
+	reverse_proxy bkan0n:80
+}
+*.bkan0n.com {
+	tls {
+		dns cloudflare {env.BKAN0N_COM_CF_API_TOKEN}
+	}
+
+	@authentik host authentik.bkan0n.com
+	handle @authentik {
+		reverse_proxy authentik:9000
+	}
+
+	@www host www.bkan0n.com
+	handle @www {
+		redir https://bkan0n.com{uri}
+	}
+
+	@grafana host grafana.bkan0n.com
+	handle @grafana {
+		#import authenticate
+		reverse_proxy grafana:3000
+	}
+
+	@prometheus host prometheus.bkan0n.com
+	handle @prometheus {
+		# import authenticate
+		reverse_proxy prometheus:9090
+	}
+
+	@cadvisor host cadvisor.bkan0n.com
+	handle @cadvisor {
+		# import authenticate
+		reverse_proxy cadvisor:8080
+	}
+
+	@monitor host monitor.bkan0n.com
+	handle @monitor {
+		# import authenticate
+		reverse_proxy dash:3001
+	}
+
+	@loki host loki.bkan0n.com
+	handle @loki {
+		reverse_proxy loki:3100
+	}
+	@status host status.bkan0n.com
+	handle @status {
+		reverse_proxy uptime-kuma:3001
+	}
+
+	@translate host translate.bkan0n.com
+	handle @translate {
+		reverse_proxy libretranslate:5000
+	}
+
+	@webhook host webhook.bkan0n.com
+	handle @webhook {
+		reverse_proxy webhook:8000
+	}
+}
+
 youngnebula.com {
 	tls {
 		dns cloudflare {env.YOUNGNEBULA_COM_CF_API_TOKEN}
@@ -22,5 +87,110 @@ youngnebula.com {
 	@rabbitmq host rabbitmq.youngnebula.com
 	handle @rabbitmq {
 		reverse_proxy genjishimada-rabbitmq:15672
+	}
+}
+
+genji.pk {
+	tls {
+		dns cloudflare {env.GENJI_PK_CF_API_TOKEN}
+	}
+	reverse_proxy genjishimada-web-dev:8080
+}
+
+*.genji.pk {
+	tls {
+		dns cloudflare {env.GENJI_PK_CF_API_TOKEN}
+	}
+
+	############ PROD
+	@www host www.genji.pk
+	handle @www {
+		redir https://genji.pk{uri}
+	}
+
+	@api host api.genji.pk
+	handle @api {
+		reverse_proxy genji-api:80
+	}
+
+	@rabbitmq host rabbitmq.genji.pk
+	handle @rabbitmq {
+		reverse_proxy genjishimada-rabbitmq:15672
+	}
+
+	############ DEV
+	@dev-site host dev.genji.pk
+	handle @dev-site {
+		# import authenticate
+		reverse_proxy genjishimada-web-dev:8080
+	}
+
+	@dev-api host api.dev.genji.pk
+	handle @dev-api {
+		reverse_proxy genjishimada-api-dev:8000
+	}
+
+	@rabbitmq-dev host rabbitmq.dev.genji.pk
+	handle @rabbitmq {
+		reverse_proxy genjishimada-rabbit-dev:15672
+	}
+}
+
+doom.pk {
+	tls {
+		dns cloudflare {env.DOOM_PK_CF_API_TOKEN}
+	}
+	reverse_proxy bkan0n:80
+}
+
+*.doom.pk {
+	tls {
+		dns cloudflare {env.DOOM_PK_CF_API_TOKEN}
+	}
+
+	@www host www.doom.pk
+	handle @www {
+		redir https://doom.pk{uri}
+	}
+
+	@api host api.doom.pk
+	handle @api {
+		reverse_proxy doom-api:80
+	}
+}
+fromskytocenter.com {
+	tls {
+		dns cloudflare {env.FROMSKYTOCENTER_COM_CF_API_TOKEN}
+	}
+	reverse_proxy fstc-website:80
+}
+
+*.fromskytocenter.com {
+	tls {
+		dns cloudflare {env.FROMSKYTOCENTER_COM_CF_API_TOKEN}
+	}
+
+	@www host www.fromskytocenter.com
+	handle @www {
+		redir https://fromskytocenter.com{uri}
+	}
+}
+
+waitformein.space {
+	tls {
+		dns cloudflare {env.WAITFORMEIN_SPACE_CF_API_TOKEN}
+	}
+
+	reverse_proxy fstc-website:80
+}
+
+*.waitformein.space {
+	tls {
+		dns cloudflare {env.WAITFORMEIN_SPACE_CF_API_TOKEN}
+	}
+
+	@www host www.waitformein.space
+	handle @www {
+		redir https://fromskytocenter.com{uri}
 	}
 }
