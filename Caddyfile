@@ -94,7 +94,7 @@ genji.pk {
 	tls {
 		dns cloudflare {env.GENJI_PK_CF_API_TOKEN}
 	}
-	reverse_proxy genjishimada-web-dev:8080
+	reverse_proxy genjishimada-web:8080
 }
 
 *.genji.pk {
@@ -125,13 +125,13 @@ genji.pk {
 		reverse_proxy genjishimada-web-dev:8080
 	}
 
-	@dev-api host api.dev.genji.pk
+	@dev-api host dev-api.genji.pk
 	handle @dev-api {
 		reverse_proxy genjishimada-api-dev:8000
 	}
 
-	@rabbitmq-dev host rabbitmq.dev.genji.pk
-	handle @rabbitmq {
+	@rabbitmq-dev host dev-rabbitmq.genji.pk
+	handle @rabbitmq-dev {
 		reverse_proxy genjishimada-rabbit-dev:15672
 	}
 }
