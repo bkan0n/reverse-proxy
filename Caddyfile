@@ -119,8 +119,8 @@ genji.pk {
 	}
 
 	############ DEV
-	@dev-site host dev.genji.pk
-	handle @dev-site {
+	@dev-web host dev.genji.pk
+	handle @dev-web {
 		# import authenticate
 		reverse_proxy genjishimada-web-dev:8080
 	}
@@ -130,8 +130,8 @@ genji.pk {
 		reverse_proxy genjishimada-api-dev:8000
 	}
 
-	@rabbitmq-dev host dev-rabbitmq.genji.pk
-	handle @rabbitmq-dev {
+	@dev-rabbitmq host dev-rabbitmq.genji.pk
+	handle @dev-rabbitmq {
 		reverse_proxy genjishimada-rabbit-dev:15672
 	}
 }
