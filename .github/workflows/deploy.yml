@@ -80,4 +80,9 @@ jobs:
           docker compose -f docker-compose.yml up -d --build --no-deps --force-recreate
 
         env:
+          BKAN0N_COM_CF_API_TOKEN: ${{ secrets.BKAN0N_COM_CF_API_TOKEN }}
+          DOOM_PK_CF_API_TOKEN: ${{ secrets.DOOM_PK_CF_API_TOKEN }}
+          GENJI_PK_CF_API_TOKEN: ${{ secrets.GENJI_PK_CF_API_TOKEN }}
           YOUNGNEBULA_COM_CF_API_TOKEN: ${{ secrets.YOUNGNEBULA_COM_CF_API_TOKEN }}
+          WAITFORMEIN_SPACE_CF_API_TOKEN: ${{ secrets.WAITFORMEIN_SPACE_CF_API_TOKEN }}
+          FROMSKYTOCENTER_COM_CF_API_TOKEN: ${{ secrets.FROMSKYTOCENTER_COM_CF_API_TOKEN }}
