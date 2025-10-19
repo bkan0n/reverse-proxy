@@ -132,7 +132,7 @@ genji.pk {
 
 	@dev-rabbitmq host dev-rabbitmq.genji.pk
 	handle @dev-rabbitmq {
-		reverse_proxy genjishimada-rabbit-dev:15672
+		reverse_proxy genjishimada-rabbitmq-dev:15672
 	}
 }
 
