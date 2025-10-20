@@ -118,6 +118,11 @@ genji.pk {
 		reverse_proxy genjishimada-rabbitmq:15672
 	}
 
+	@db host db.genji.pk
+	handle @db {
+		reverse_proxy genjishimada-db:5432
+	}
+
 	############ DEV
 	@dev-web host dev.genji.pk
 	handle @dev-web {
@@ -133,6 +138,11 @@ genji.pk {
 	@dev-rabbitmq host dev-rabbitmq.genji.pk
 	handle @dev-rabbitmq {
 		reverse_proxy genjishimada-rabbitmq-dev:15672
+	}
+
+	@dev-db host dev-db.genji.pk
+	handle @dev-db {
+		reverse_proxy genjishimada-db-dev:5423
 	}
 }
 
