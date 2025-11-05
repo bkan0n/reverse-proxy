@@ -1,3 +1,13 @@
+(authenticate) {
+	reverse_proxy /outpost.goauthentik.io/* authentik:9000
+
+	forward_auth authentik:9000 {
+		uri /outpost.goauthentik.io/auth/caddy
+		copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Email X-Authentik-Name X-Authentik-Uid X-Authentik-Jwt X-Authentik-Meta-Jwks X-Authentik-Meta-Outpost X-Authentik-Meta-Provider X-Authentik-Meta-App X-Authentik-Meta-Version
+		trusted_proxies private_ranges
+	}
+}
+
 bkan0n.com {
 	tls {
 		dns cloudflare {env.BKAN0N_COM_CF_API_TOKEN}
@@ -115,6 +125,7 @@ genji.pk {
 
 	@rabbitmq host rabbitmq.genji.pk
 	handle @rabbitmq {
+		import authenticate
 		reverse_proxy genjishimada-rabbitmq:15672
 	}
 
@@ -126,7 +137,7 @@ genji.pk {
 	############ DEV
 	@dev-web host dev.genji.pk
 	handle @dev-web {
-		# import authenticate
+		import authenticate
 		reverse_proxy genjishimada-web-dev:8080
 	}
 
@@ -137,6 +148,7 @@ genji.pk {
 
 	@dev-rabbitmq host dev-rabbitmq.genji.pk
 	handle @dev-rabbitmq {
+		import authenticate
 		reverse_proxy genjishimada-rabbitmq-dev:15672
 	}
 
