@@ -1,8 +1,14 @@
 (authenticate) {
-	reverse_proxy /outpost.goauthentik.io/* authentik:9000
+	# 1) Outpost endpoints: DO NOT auth-protect these
+	@outpost path /outpost.goauthentik.io/*
+	reverse_proxy @outpost authentik:9000
 
-	forward_auth authentik:9000 {
+	# 2) Everything else is auth-protected
+	@protected not path /outpost.goauthentik.io/*
+	forward_auth @protected authentik:9000 {
 		uri /outpost.goauthentik.io/auth/caddy
+		header_up Host {host}
+		header_up X-Forwarded-Proto {scheme}
 		copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Email X-Authentik-Name X-Authentik-Uid X-Authentik-Jwt X-Authentik-Meta-Jwks X-Authentik-Meta-Outpost X-Authentik-Meta-Provider X-Authentik-Meta-App X-Authentik-Meta-Version
 		trusted_proxies private_ranges
 	}
