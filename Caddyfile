@@ -131,8 +131,10 @@ genji.pk {
 
 	@rabbitmq host rabbitmq.genji.pk
 	handle @rabbitmq {
-		import authenticate
-		reverse_proxy genjishimada-rabbitmq:15672
+		route {
+			import authenticate
+			reverse_proxy genjishimada-rabbitmq:15672
+		}
 	}
 
 	@db host db.genji.pk
@@ -143,8 +145,10 @@ genji.pk {
 	############ DEV
 	@dev-web host dev.genji.pk
 	handle @dev-web {
-		import authenticate
-		reverse_proxy genjishimada-web-dev:8080
+		route {
+			import authenticate
+			reverse_proxy genjishimada-web-dev:8080
+		}
 	}
 
 	@dev-api host dev-api.genji.pk
@@ -154,8 +158,10 @@ genji.pk {
 
 	@dev-rabbitmq host dev-rabbitmq.genji.pk
 	handle @dev-rabbitmq {
-		import authenticate
-		reverse_proxy genjishimada-rabbitmq-dev:15672
+		route {
+			import authenticate
+			reverse_proxy genjishimada-rabbitmq-dev:15672
+		}
 	}
 
 	@dev-db host dev-db.genji.pk
