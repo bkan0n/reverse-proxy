@@ -66,7 +66,7 @@ genji.pk {
 
 	@api host api.genji.pk
 	handle @api {
-		reverse_proxy genji-api:80
+		reverse_proxy genjishimada-api:80
 	}
 
 	@rabbitmq host rabbitmq.genji.pk
