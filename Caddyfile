@@ -46,10 +46,6 @@ genji.pk {
 	tls {
 		dns cloudflare {env.GENJI_PK_CF_API_TOKEN}
 	}
-	basic_auth {
-		arrow $2a$14$Lft5SfxwjNZr576wrdh7KOHo8ekjf3JCpuvpP0CUuJOcl6Pwlm/JG
-	}
-
 	reverse_proxy genjishimada-web:8080
 }
 
