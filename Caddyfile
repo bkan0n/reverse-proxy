@@ -28,6 +28,21 @@ bkan0n.com {
 	handle @webhook {
 		reverse_proxy webhook:8000
 	}
+
+	@prometheus host prometheus.bkan0n.com
+	handle @prometheus {
+		reverse_proxy prometheus-test:9090
+	}
+
+	@cadvisor host cadvisor.bkan0n.com
+	handle @cadvisor {
+		reverse_proxy cadvisor-test:8080
+	}
+
+	@grafana host grafana.bkan0n.com
+	handle @grafana {
+		reverse_proxy grafana-test:3000
+	}
 }
 
 youngnebula.com {
