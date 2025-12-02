@@ -31,11 +31,17 @@ bkan0n.com {
 
 	@prometheus host prometheus.bkan0n.com
 	handle @prometheus {
+		basic_auth {
+			arrow $2a$14$MuD4XaqLGRpPa9vz.N8Swev0rT1mpcqZVDierzKSOlvYMqKwK/3aa
+		}
 		reverse_proxy prometheus-test:9090
 	}
 
 	@cadvisor host cadvisor.bkan0n.com
 	handle @cadvisor {
+		basic_auth {
+			arrow $2a$14$MuD4XaqLGRpPa9vz.N8Swev0rT1mpcqZVDierzKSOlvYMqKwK/3aa
+		}
 		reverse_proxy cadvisor-test:8080
 	}
 
