@@ -49,6 +49,16 @@ bkan0n.com {
 	handle @grafana {
 		reverse_proxy grafana-test:3000
 	}
+
+	@zerobyte host zerobyte.bkan0n.com
+	handle @zerobyte {
+		reverse_proxy zerobyte:4096
+	}
+
+	@dockhand host dockhand.bkan0n.com
+	handle @dockhand {
+		reverse_proxy dockhand:3000
+	}
 }
 
 youngnebula.com {
