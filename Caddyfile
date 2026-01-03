@@ -125,6 +125,13 @@ genji.pk {
 			reverse_proxy genjishimada-rabbitmq-dev:15672
 		}
 	}
+
+	@db host db.genji.pk
+	handle @db {
+		route {
+			reverse_proxy visualdb:80
+		}
+	}
 }
 
 doom.pk {
