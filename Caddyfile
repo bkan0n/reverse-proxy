@@ -14,6 +14,11 @@ bkan0n.com {
 		redir https://bkan0n.com{uri}
 	}
 
+	@portal host portal.bkan0n.com
+	handle @portal {
+		reverse_proxy pocketid:1411
+	}
+
 	@status host status.bkan0n.com
 	handle @status {
 		reverse_proxy uptime-kuma:3001
