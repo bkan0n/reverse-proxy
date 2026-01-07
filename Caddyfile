@@ -39,7 +39,7 @@ bkan0n.com {
 		basic_auth {
 			arrow $2a$14$MuD4XaqLGRpPa9vz.N8Swev0rT1mpcqZVDierzKSOlvYMqKwK/3aa
 		}
-		reverse_proxy prometheus-test:9090
+		reverse_proxy prometheus:9090
 	}
 
 	@cadvisor host cadvisor.bkan0n.com
@@ -47,12 +47,22 @@ bkan0n.com {
 		basic_auth {
 			arrow $2a$14$MuD4XaqLGRpPa9vz.N8Swev0rT1mpcqZVDierzKSOlvYMqKwK/3aa
 		}
-		reverse_proxy cadvisor-test:8080
+		reverse_proxy cadvisor:8080
 	}
 
 	@grafana host grafana.bkan0n.com
 	handle @grafana {
-		reverse_proxy grafana-test:3000
+		reverse_proxy grafana:3000
+	}
+
+	@loki host loki.bkan0n.com
+	handle @loki {
+		reverse_proxy loki:3100
+	}
+
+	@alloy host alloy.bkan0n.com
+	handle @alloy {
+		reverse_proxy alloy:12345
 	}
 
 	@zerobyte host zerobyte.bkan0n.com
