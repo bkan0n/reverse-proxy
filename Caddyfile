@@ -1,3 +1,18 @@
+(auth_monitoring) {
+	forward_auth oauth2-proxy:4180 {
+		uri /oauth2/auth
+		header_up X-Real-IP {remote_host}
+		header_up X-Forwarded-Host {host}
+		header_up X-Forwarded-Uri {uri}
+		header_up X-Forwarded-Proto {scheme}
+
+		@unauthorized status 401
+		handle_response @unauthorized {
+			redir https://auth.bkan0n.com/oauth2/start?rd={scheme}://{host}{uri}
+		}
+	}
+}
+
 bkan0n.com {
 	tls {
 		dns cloudflare {env.BKAN0N_COM_CF_API_TOKEN}
@@ -12,6 +27,11 @@ bkan0n.com {
 	@www host www.bkan0n.com
 	handle @www {
 		redir https://bkan0n.com{uri}
+	}
+
+	@auth host auth.bkan0n.com
+	handle @auth {
+		reverse_proxy oauth2-proxy:4180
 	}
 
 	@portal host portal.bkan0n.com
@@ -36,17 +56,13 @@ bkan0n.com {
 
 	@prometheus host prometheus.bkan0n.com
 	handle @prometheus {
-		basic_auth {
-			arrow $2a$14$MuD4XaqLGRpPa9vz.N8Swev0rT1mpcqZVDierzKSOlvYMqKwK/3aa
-		}
+		import auth_monitoring
 		reverse_proxy prometheus:9090
 	}
 
 	@cadvisor host cadvisor.bkan0n.com
 	handle @cadvisor {
-		basic_auth {
-			arrow $2a$14$MuD4XaqLGRpPa9vz.N8Swev0rT1mpcqZVDierzKSOlvYMqKwK/3aa
-		}
+		import auth_monitoring
 		reverse_proxy cadvisor:8080
 	}
 
@@ -57,11 +73,13 @@ bkan0n.com {
 
 	@loki host loki.bkan0n.com
 	handle @loki {
+		import auth_monitoring
 		reverse_proxy loki:3100
 	}
 
 	@alloy host alloy.bkan0n.com
 	handle @alloy {
+		import auth_monitoring
 		reverse_proxy alloy:12345
 	}
 
@@ -114,7 +132,6 @@ genji.pk {
 	@rabbitmq host rabbitmq.genji.pk
 	handle @rabbitmq {
 		route {
-			# import authenticate
 			reverse_proxy genjishimada-rabbitmq:15672
 		}
 	}
@@ -123,7 +140,6 @@ genji.pk {
 	@dev-web host dev.genji.pk
 	handle @dev-web {
 		route {
-			# import authenticate
 			reverse_proxy genjishimada-web-dev:8080
 		}
 	}
@@ -136,7 +152,6 @@ genji.pk {
 	@dev-rabbitmq host dev-rabbitmq.genji.pk
 	handle @dev-rabbitmq {
 		route {
-			# import authenticate
 			reverse_proxy genjishimada-rabbitmq-dev:15672
 		}
 	}
