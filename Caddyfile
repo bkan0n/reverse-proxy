@@ -168,7 +168,7 @@ doom.pk {
 	tls {
 		dns cloudflare {env.DOOM_PK_CF_API_TOKEN}
 	}
-	reverse_proxy web:3000
+	reverse_proxy bkan0n:80
 }
 
 *.doom.pk {
