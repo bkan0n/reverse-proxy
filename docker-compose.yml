@@ -20,10 +20,12 @@ services:
       - YOUNGNEBULA_COM_CF_API_TOKEN=${YOUNGNEBULA_COM_CF_API_TOKEN}
       - WAITFORMEIN_SPACE_CF_API_TOKEN=${WAITFORMEIN_SPACE_CF_API_TOKEN}
       - FROMSKYTOCENTER_COM_CF_API_TOKEN=${FROMSKYTOCENTER_COM_CF_API_TOKEN}
+      - JETPACKCAT_RACING_CF_API_TOKEN=${JETPACKCAT_RACING_CF_API_TOKEN}
     networks:
       - caddy-network
       - genji-network
       - doom-network
+      - jetpack-network
 
 volumes:
   caddy_data:
@@ -35,4 +37,6 @@ networks:
   genji-network:
     external: true
   doom-network:
+    external: true
+  jetpack-network:
     external: true

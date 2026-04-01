@@ -232,3 +232,36 @@ waitformein.space {
 		redir https://fromskytocenter.com{uri}
 	}
 }
+
+jetpackcat.racing {
+	tls {
+		dns cloudflare {env.JETPACKCAT_RACING_CF_API_TOKEN}
+	}
+	reverse_proxy bkan0n:80
+}
+
+*.djetpackcat.racing {
+	tls {
+		dns cloudflare {env.JETPACKCAT_RACING_CF_API_TOKEN}
+	}
+
+	@www host www.jetpackcat.racing
+	handle @www {
+		redir https://jetpackcat.racing{uri}
+	}
+
+	@api host api.jetpackcat.racing
+	handle @api {
+		reverse_proxy api:8000
+	}
+
+	@dev host dev.jetpackcat.racing
+	handle @dev {
+		reverse_proxy staging-web:3000
+	}
+
+	@dev-api host dev-api.jetpackcat.racing
+	handle @dev-api {
+		reverse_proxy staging-api:8000
+	}
+}
