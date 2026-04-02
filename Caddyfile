@@ -240,7 +240,7 @@ jetpackcat.racing {
 	reverse_proxy bkan0n:80
 }
 
-*.djetpackcat.racing {
+*.jetpackcat.racing {
 	tls {
 		dns cloudflare {env.JETPACKCAT_RACING_CF_API_TOKEN}
 	}
