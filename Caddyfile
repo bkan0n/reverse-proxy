@@ -237,7 +237,12 @@ jetpackcat.racing {
 	tls {
 		dns cloudflare {env.JETPACKCAT_RACING_CF_API_TOKEN}
 	}
-	reverse_proxy jcr-web:3000
+	handle_path /api/* {
+		reverse_proxy jcr-api:8000
+	}
+	handle {
+		reverse_proxy jcr-web:3000
+	}
 }
 
 *.jetpackcat.racing {
@@ -250,11 +255,6 @@ jetpackcat.racing {
 		redir https://jetpackcat.racing{uri}
 	}
 
-	@api host api.jetpackcat.racing
-	handle @api {
-		reverse_proxy jcr-api:8000
-	}
-
 	@dev host dev.jetpackcat.racing
 	handle @dev {
 		reverse_proxy jcr-staging-web:3000
@@ -263,5 +263,11 @@ jetpackcat.racing {
 	@dev-api host dev-api.jetpackcat.racing
 	handle @dev-api {
 		reverse_proxy jcr-staging-api:8000
+	}
+
+	# Retired — keep ~30 days, then delete this block entirely.
+	@api host api.jetpackcat.racing
+	handle @api {
+		respond "Gone — use https://jetpackcat.racing/api" 410
 	}
 }
