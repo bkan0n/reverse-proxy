@@ -257,11 +257,17 @@ jetpackcat.racing {
 
 	@dev host dev.jetpackcat.racing
 	handle @dev {
-		reverse_proxy jcr-staging-web:3000
+		handle_path /api/* {
+			reverse_proxy jcr-staging-api:8000
+		}
+		handle {
+			reverse_proxy jcr-staging-web:3000
+		}
 	}
 
+	# Retired — keep ~30 days, then delete this block entirely.
 	@dev-api host dev-api.jetpackcat.racing
 	handle @dev-api {
-		reverse_proxy jcr-staging-api:8000
+		respond "Gone — use https://dev.jetpackcat.racing/api" 410
 	}
 }
