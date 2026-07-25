@@ -168,7 +168,7 @@ doom.pk {
 	tls {
 		dns cloudflare {env.DOOM_PK_CF_API_TOKEN}
 	}
-	reverse_proxy web:3000
+	reverse_proxy momentum-web:3000
 }
 
 *.doom.pk {
@@ -183,7 +183,7 @@ doom.pk {
 
 	@api host api.doom.pk
 	handle @api {
-		reverse_proxy api:8000
+		reverse_proxy momentum-api:8000
 	}
 
 	@dev host dev.doom.pk
