@@ -213,7 +213,7 @@ waitformein.space {
 		dns cloudflare {env.WAITFORMEIN_SPACE_CF_API_TOKEN}
 	}
 
-	reverse_proxy fstc-website:80
+	reverse_proxy wait-for-me-in-space:4173
 }
 
 *.waitformein.space {
@@ -223,7 +223,7 @@ waitformein.space {
 
 	@www host www.waitformein.space
 	handle @www {
-		redir https://fromskytocenter.com{uri}
+		redir https://waitformein.space{uri}
 	}
 }
 
