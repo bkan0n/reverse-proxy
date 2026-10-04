@@ -194,7 +194,7 @@ fromskytocenter.com {
 	tls {
 		dns cloudflare {env.FROMSKYTOCENTER_COM_CF_API_TOKEN}
 	}
-	reverse_proxy fstc-website:80
+	reverse_proxy from-sky-to-center:4174
 }
 
 *.fromskytocenter.com {
