@@ -92,6 +92,12 @@ bkan0n.com {
 	handle @dockhand {
 		reverse_proxy dockhand:3000
 	}
+
+	@banners host banners.bkan0n.com
+	handle @banners {
+		import auth_monitoring
+		reverse_proxy auto-banner:8765
+	}
 }
 
 youngnebula.com {
