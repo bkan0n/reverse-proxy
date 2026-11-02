@@ -98,6 +98,11 @@ bkan0n.com {
 		import auth_monitoring
 		reverse_proxy auto-banner:8765
 	}
+
+	@brugparkour host brugparkour.bkan0n.com
+	handle @brugparkour {
+		reverse_proxy brugparkour-web:8080
+	}
 }
 
 youngnebula.com {
