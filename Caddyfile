@@ -108,6 +108,11 @@ bkan0n.com {
 	handle @accounts {
 		reverse_proxy brugparkour-accounts:8080
 	}
+
+	@brugbot host brugbot.bkan0n.com
+	handle @brugbot {
+		reverse_proxy brugbot:8080
+	}
 }
 
 youngnebula.com {
