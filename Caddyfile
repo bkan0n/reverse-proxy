@@ -109,6 +109,18 @@ bkan0n.com {
 		reverse_proxy brugparkour-accounts:8080
 	}
 
+	# Brug Parkour online service. Keep access logging off for these two hosts:
+	# the game's privacy page says the web server keeps no access log of visits.
+	@online_staging host online-staging.bkan0n.com
+	handle @online_staging {
+		reverse_proxy brugparkour-online-staging:8080
+	}
+
+	@online host online.bkan0n.com
+	handle @online {
+		reverse_proxy brugparkour-online:8080
+	}
+
 	@brugbot host brugbot.bkan0n.com
 	handle @brugbot {
 		reverse_proxy brugbot:8080
